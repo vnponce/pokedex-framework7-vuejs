@@ -8,14 +8,15 @@
           f7-nav-right
         f7-pages#pages
           f7-page.navbar-fixed
-            f7-searchbar(cancel-link='Cancelar', placeholder='Search pokemon', :clear='true', v-model="search")
-            f7-preloader.center(v-if="! pokemons")
+            f7-searchbar(cancel-link='Cancelar', placeholder='Search pokemon', :clear='true', v-model="search", @keyup.enter="filterPokemons")
+            f7-preloader.center(v-if="!pokemons")
             f7-list(media-list)
-              f7-list-item(v-for="(pokemon , index) in pokemons", 
+              f7-list-item(v-for="(pokemon , index) in filteredPokemons", 
                 :title='name(pokemon.name)', 
-                subtitle='Subtitle 1', 
-                :text='pokemon.url', 
-                :media='image(index+1)')
+                :subtitle='pokemon.url', 
+                text='', 
+                :media='image(pokemon.url)',
+                :link="details(pokemon.url)")
 
 </template>
 
@@ -25,6 +26,7 @@ export default {
   mounted(){
     this.$http.get('http://pokeapi.co/api/v2/pokemon/?limit=151&offset=0',{}, {}).then(res => {
       this.pokemons = res.body.results;
+      this.filteredPokemons = this.pokemons;
       // console.log(this.pokemons);
       console.log(res.body.results);
     }).catch(err => {
@@ -33,19 +35,39 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App with Framework7 and Webpack',
+      msg: 'Welcome to Your Pokedex App with Vue.js, Framework7 and Webpack',
       search: '',
-      pokemons: {}
+      pokemons: {},
+      filteredPokemons: {}
     }
   },
   methods: {
-    image(id) {
-      return '<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+id+'.png">';
+    image(url) {
+      let id = this.getId(url);
+      return '<img class="lazy" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+id+'.png">';
     },
     name(name) {
       return name.charAt(0).toUpperCase() + name.substr(1).toLowerCase();
+    },
+    filterPokemons(){
+      console.log('change');
+      if(this.search !== ''){
+        this.filteredPokemons =  this.filteredPokemons.filter(pokemon => {
+          if( pokemon.name == this.search ){
+            return pokemon;
+          }
+        });
+      }
+      this.filteredPokemons = this.pokemons;
+    },
+    getId(url){
+      let id = url.match(/http:\/\/pokeapi.co\/api\/v2\/pokemon\/(\d+)\//);
+      return id[1];
+    },
+    details(url){
+      return '/pokemon/' + this.getId(url);
     }
-  }
+  },
 }
 </script>
 
