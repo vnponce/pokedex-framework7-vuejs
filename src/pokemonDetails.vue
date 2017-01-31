@@ -1,7 +1,7 @@
 <template lang="jade">
   f7-page(hide-bars-on-scroll='')
     f7-navbar(back-link='Back', :title='name', sliding='')
-    f7-block 
+    f7-block(v-if="pokemon.types")
       f7-card(:title="title", :content='content', footer='Card Footer')
       p Tipo:
       f7-chip(v-for="type in pokemon.types", :text='type.type.name')
@@ -43,7 +43,7 @@ export default {
   },
   computed: {
       title(){
-        return 'This is ' + this.pokemon.name +'page!';
+        return 'This is ' + this.pokemon.name +' page!';
       },
       content(){
         return '<div valign="bottom" class="card-header color-black no-border">'+this.pokemon.name+'</div><div class="img" style="background-image:url('+ this.url_image +')" ></div><p>Level: '+this.pokemon.base_experience+'</p>';

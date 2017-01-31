@@ -8,9 +8,16 @@
           f7-nav-right
         f7-pages#pages
           f7-page.navbar-fixed
-            f7-searchbar(cancel-link='Cancelar', placeholder='Search pokemon', :clear='true', v-model="search", @keyup.enter="filterPokemons")
+            f7-searchbar(cancel-link='Cancelar', 
+              placeholder='Search pokemon', 
+              :clear='true', 
+              v-model="search",
+              class="searchbar-init", 
+              data-search-list=".list-block-search",
+              data-search-in=".item-title")
+            .searchbar-overlay
             f7-button(big round fill, v-if="!pokemonStatus", @click="getPokemons") Buscar
-            f7-list(media-list, v-if="pokemons")
+            f7-list(media-list, class="list-block-search searchbar-found", v-if="pokemons")
               f7-list-item(v-for="(pokemon , index) in filteredPokemons", 
                 :title='name(pokemon.name)', 
                 subtitle='', 
@@ -71,7 +78,10 @@ export default {
     },
     details(url){
       return '/pokemon/' + this.getId(url);
-    }
+    },
+    onSearch: function (query, found) {
+        console.log('search', query);
+      },
   },
 }
 </script>
